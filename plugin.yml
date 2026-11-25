@@ -1,0 +1,16 @@
+name: LavaWeapons
+version: '${project.version}'
+main: com.rizgamer.lavaweapons.LavaWeapons
+api-version: '26.1'
+authors: [RIZGAMER]
+description: Lava and God custom weapons - made by RIZGAMER
+commands:
+  lava:
+    description: Lava Weapons admin command
+    usage: /lava give <weapon|all> [player]
+    aliases: [lw]
+    permission: lavaweapons.admin
+permissions:
+  lavaweapons.admin:
+    description: Give and manage Lava Weapons
+    default: op

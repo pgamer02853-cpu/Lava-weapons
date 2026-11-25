@@ -1,0 +1,43 @@
+# Lava Weapons by RIZGAMER
+# Cooldowns are in SECONDS. Damage is in HP (2 HP = 1 heart).
+cooldowns:
+  meteor_storm: 90
+  volcanic_leap: 20
+  volcanic_slam: 60
+  ember_lunge: 1
+  impale_charge: 15
+  holy_aegis: 180
+  divine_volcano: 1800
+  godfall_smash: 60
+  null_zone: 3600
+damage:
+  lava-blade: 16
+  lava-hammer: 16
+  lava-spear: 16
+  meteor: 24
+  impale-charge: 24
+  volcano-pulse: 14
+fire-seconds: 5
+meteor:
+  radius: 28
+  max-targets: 40
+slam:
+  radius: 10
+  explosion-power: 4
+  break-blocks: true
+spear:
+  oneshot-fall-distance: 15
+god-blessing:
+  hearts: 50
+  lava-damage-cap-hearts: 5
+  god-vs-god-hearts: 25
+holy-aegis-seconds: 20
+volcano:
+  radius: 22
+  height: 24
+  blocks-per-tick: 300
+  restore-after-seconds: 300
+  caster-invulnerable: true
+null-zone:
+  size: 100
+  duration-seconds: 900
