@@ -8,6 +8,7 @@ public final class State {
     public final Map<UUID, Long> noFall = new HashMap<>();
     public final Map<UUID, Long> blastImmune = new HashMap<>();
     public final Map<UUID, Long> slamPending = new HashMap<>();
+    public final Map<UUID, Long> totemPop = new HashMap<>();
     public final Set<UUID> locked = new HashSet<>();
 
     public boolean active(Map<UUID, Long> m, UUID id) {

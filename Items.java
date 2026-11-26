@@ -41,7 +41,7 @@ public final class Items {
                 new Ab("Holy Aegis", "Sneak + Right-Click", "holy_aegis", "20 seconds of invulnerability"),
                 new Ab("God Blessing", "In inventory", null, "50 hearts, Lava weapons deal max 5 hearts to you"));
             case GOD_HAMMER -> List.of(
-                new Ab("Divine Judgement", "Every hit", null, "One-shot kill"),
+                new Ab("Divine Judgement", "Every hit", null, "One-shot kill (normal Mace smash + Wind Burst II work too)"),
                 new Ab("Volcanic Leap", "Right-Click", "volcanic_leap", "Launch into the air"),
                 new Ab("Godfall Smash", "Hit while falling", "godfall_smash", "Destroys the target's armor"),
                 new Ab("Holy Aegis", "Sneak + Right-Click", "holy_aegis", "20 seconds of invulnerability"),
@@ -63,7 +63,7 @@ public final class Items {
         int i = 1;
         for (Ab a : abilities(w)) {
             l.add(line(i + ". " + a.name() + "  [" + a.trigger() + "]", main));
-            String cd = a.cd() == null ? "" : "  |  Cooldown: " + Cooldowns.fmt(pl.getConfig().getLong("cooldowns." + a.cd(), 0));
+            String cd = a.cd() == null ? "" : "  |  Cooldown: " + Cooldowns.fmtD(pl.getConfig().getDouble("cooldowns." + a.cd(), 0));
             l.add(line("   " + a.desc() + cd, NamedTextColor.GRAY));
             i++;
         }
@@ -82,7 +82,7 @@ public final class Items {
         meta.lore(lore(w));
         meta.setUnbreakable(true);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ENCHANTS);
-        if (w == Weapon.LAVA_HAMMER) meta.addEnchant(Enchantment.WIND_BURST, 2, true); // hidden, only applied
+        if (w == Weapon.LAVA_HAMMER || w == Weapon.GOD_HAMMER) meta.addEnchant(Enchantment.WIND_BURST, 2, true); // hidden, only applied
         meta.setEnchantmentGlintOverride(true);
         NamespacedKey model = NamespacedKey.fromString("lavaweapons:" + w.id);
         if (model != null) meta.setItemModel(model);

@@ -12,12 +12,18 @@ public final class Cooldowns {
 
     Cooldowns(LavaWeapons pl) { this.pl = pl; }
 
-    public long seconds(String key) { return pl.getConfig().getLong("cooldowns." + key, 10L); }
+    public double seconds(String key) { return pl.getConfig().getDouble("cooldowns." + key, 10.0); }
 
     public static String fmt(long sec) {
         if (sec >= 3600) return (sec / 3600) + "h " + ((sec % 3600) / 60) + "m";
         if (sec >= 60) return (sec / 60) + "m " + (sec % 60) + "s";
         return sec + "s";
+    }
+
+    /** Seconds as text; short cooldowns keep their decimals (0.4s). */
+    public static String fmtD(double sec) {
+        if (sec < 1.0) return String.format(java.util.Locale.ROOT, "%.1fs", sec);
+        return fmt((long) Math.round(sec));
     }
 
     public boolean tryUse(Player p, String key, String name) { return tryUse(p, key, name, true); }
@@ -33,7 +39,7 @@ public final class Cooldowns {
             }
             return false;
         }
-        m.put(key, now + seconds(key) * 1000L);
+        m.put(key, now + (long) (seconds(key) * 1000.0));
         return true;
     }
 

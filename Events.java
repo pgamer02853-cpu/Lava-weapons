@@ -14,6 +14,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
@@ -39,7 +40,7 @@ public final class Events implements Listener {
         if (a == Action.RIGHT_CLICK_AIR || a == Action.RIGHT_CLICK_BLOCK) {
             if (a == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock() != null
                     && e.getClickedBlock().getType().isInteractable() && !p.isSneaking()) return; // let chests/doors work
-            e.setCancelled(true);
+            if (w != Weapon.LAVA_SPEAR) e.setCancelled(true); // spear keeps its normal charge
             pl.ab.rightClick(p, w);
         } else if (a == Action.LEFT_CLICK_AIR || a == Action.LEFT_CLICK_BLOCK) {
             pl.ab.leftClickAir(p, w);
@@ -55,17 +56,26 @@ public final class Events implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onLockedHit(EntityDamageByEntityEvent e) {
+        if (e.getDamager() instanceof Player p && pl.st.locked.contains(p.getUniqueId())) e.setCancelled(true);
+    }
+
+    /** Vanilla hit stays untouched (crit, Mace smash, Wind Burst...). Our extra damage is added on top. */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onMelee(EntityDamageByEntityEvent e) {
         if (Dmg.busy) return;
         if (!(e.getDamager() instanceof Player p)) return;
         if (!(e.getEntity() instanceof LivingEntity v)) return;
-        if (pl.st.locked.contains(p.getUniqueId())) { e.setCancelled(true); return; }
         if (e.getCause() != DamageCause.ENTITY_ATTACK) return;
         Weapon w = pl.items.of(p.getInventory().getItemInMainHand());
         if (w == null || w == Weapon.TIME_CLOCK) return;
-        if (pl.zones.nullified(p.getLocation())) return; // inside Null Zone: vanilla behaviour
-        e.setCancelled(true);
-        pl.ab.melee(p, v, w);
+        if (pl.zones.nullified(p.getLocation())) return; // inside Null Zone: vanilla only
+        pl.ab.melee(p, v, w, e.getFinalDamage(), e.isCritical());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onTotem(EntityResurrectEvent e) {
+        pl.st.put(pl.st.totemPop, e.getEntity().getUniqueId(), 2000);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

@@ -38,6 +38,7 @@ public final class LavaWeapons extends JavaPlugin {
         new BukkitRunnable() {
             @Override public void run() { for (Player p : Bukkit.getOnlinePlayers()) Dmg.updateBlessing(p); }
         }.runTaskTimer(this, 40L, 20L);
+        new HeldFx(this);
         getLogger().info("LavaWeapons enabled - made by RIZGAMER");
     }
 

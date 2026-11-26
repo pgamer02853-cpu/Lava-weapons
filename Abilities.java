@@ -65,17 +65,20 @@ public final class Abilities {
         }.runTaskTimer(pl, 0L, 1L);
     }
 
-    /** Called when a custom weapon hits something in melee (vanilla damage was cancelled). */
-    public void melee(Player p, LivingEntity v, Weapon w) {
+    /** Called AFTER the vanilla hit was accepted. vanilla = damage the vanilla hit already dealt. */
+    public void melee(Player p, LivingEntity v, Weapon w, double vanilla, boolean crit) {
+        double mult = crit ? 1.5 : 1.0;
+        v.setFireTicks(Math.max(v.getFireTicks(), pl.getConfig().getInt("fire-seconds", 5) * 20));
         switch (w) {
-            case LAVA_BLADE -> Dmg.hurt(p, v, cfg("damage.lava-blade", 16), true, w);
+            case LAVA_BLADE -> follow(p, v, w, cfg("damage.lava-blade", 16) * mult - vanilla, true, false);
             case LAVA_HAMMER -> {
-                if (p.isSneaking() && !p.isOnGround() && p.getFallDistance() > 1) slam(p, v);
-                else Dmg.hurt(p, v, cfg("damage.lava-hammer", 16), false, w);
+                if (p.isSneaking() && !p.isOnGround() && p.getFallDistance() > 1)
+                    Bukkit.getScheduler().runTask(pl, () -> slam(p, v));
+                else follow(p, v, w, cfg("damage.lava-hammer", 16) * mult - vanilla, false, false);
             }
             case LAVA_SPEAR -> {
-                if (p.getFallDistance() >= cfg("spear.oneshot-fall-distance", 15)) Dmg.kill(p, v, w);
-                else Dmg.hurt(p, v, cfg("damage.lava-spear", 16), true, w);
+                if (p.getFallDistance() >= cfg("spear.oneshot-fall-distance", 15)) follow(p, v, w, 0, true, true);
+                else follow(p, v, w, cfg("damage.lava-spear", 16) * mult - vanilla, true, false);
                 pl.st.put(pl.st.noFall, p.getUniqueId(), 4000);
             }
             case GOD_BLADE -> {
@@ -84,14 +87,27 @@ public final class Abilities {
                 if (h == null || now() - h[1] > 10000) h = new long[]{0, 0};
                 h[0]++; h[1] = now(); hitCounts.put(key, h);
                 if (h[0] >= 4) { breakArmor(v); hitCounts.remove(key); }
-                Dmg.kill(p, v, w);
+                follow(p, v, w, 0, true, true);
             }
             case GOD_HAMMER -> {
                 if (p.getFallDistance() >= 3.5 && pl.cd.tryUse(p, "godfall_smash", "Godfall Smash", false)) breakArmor(v);
-                Dmg.kill(p, v, w);
+                follow(p, v, w, 0, true, true);
             }
             default -> { }
         }
+    }
+
+    /** Extra damage one tick after the vanilla hit (so crit / smash / wind burst all stay normal). */
+    private void follow(Player p, LivingEntity v, Weapon w, double extra, boolean bypass, boolean kill) {
+        if (!kill && extra <= 0.5) return;
+        final UUID vid = v.getUniqueId();
+        Bukkit.getScheduler().runTask(pl, () -> {
+            if (!v.isValid() || v.isDead() || !p.isOnline()) return;
+            if (pl.st.active(pl.st.totemPop, vid)) return; // totem already popped: victim survives
+            v.setNoDamageTicks(0);
+            if (kill) Dmg.kill(p, v, w);
+            else Dmg.hurt(p, v, extra, bypass, w);
+        });
     }
 
     // ------------------------------------------------------------ helpers
