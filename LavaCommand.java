@@ -52,6 +52,13 @@ public final class LavaCommand implements CommandExecutor, TabCompleter, Listene
                 for (Weapon w : Weapon.values()) inv.setItem(i++, pl.items.create(w));
                 p.openInventory(inv);
             }
+            case "fixswap" -> {
+                String r = SwapFix.fix();
+                if (r.equals("DONE")) msg(s, "Done! paper-global.yml fixed (backup: paper-global.yml.bak). RESTART the server to enable attribute swapping.", NamedTextColor.GREEN);
+                else if (r.equals("ALREADY")) msg(s, "Swapping is already enabled in paper-global.yml.", NamedTextColor.YELLOW);
+                else if (r.equals("NOTFOUND")) msg(s, "Key not found. Open config/paper-global.yml and set update-equipment-on-player-actions: false", NamedTextColor.RED);
+                else msg(s, r, NamedTextColor.RED);
+            }
             case "reload" -> { pl.reloadConfig(); msg(s, "Config reloaded.", NamedTextColor.GREEN); }
             case "resetcd" -> {
                 Player t = a.length >= 2 ? Bukkit.getPlayerExact(a[1]) : (s instanceof Player pp ? pp : null);
@@ -68,7 +75,7 @@ public final class LavaCommand implements CommandExecutor, TabCompleter, Listene
     public List<String> onTabComplete(CommandSender s, Command cmd, String alias, String[] a) {
         if (!s.hasPermission("lavaweapons.admin")) return List.of();
         List<String> out = new ArrayList<>();
-        if (a.length == 1) out.addAll(List.of("give", "menu", "reload", "resetcd"));
+        if (a.length == 1) out.addAll(List.of("give", "menu", "reload", "resetcd", "fixswap"));
         else if (a.length == 2 && a[0].equalsIgnoreCase("give")) { for (Weapon w : Weapon.values()) out.add(w.id); out.add("all"); }
         else if ((a.length == 3 && a[0].equalsIgnoreCase("give")) || (a.length == 2 && a[0].equalsIgnoreCase("resetcd")))
             for (Player p : Bukkit.getOnlinePlayers()) out.add(p.getName());

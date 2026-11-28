@@ -18,6 +18,10 @@ damage:
   impale-charge: 24
   volcano-pulse: 14
 fire-seconds: 5
+respawn-fix: true   # bed / respawn anchor wins over /setspawn
+ranks:
+  chat: true    # rank prefix in chat
+  tab: true     # rank prefix in the tab list
 held-fx: true   # lava flames around the hand while holding a Lava weapon
 meteor:
   radius: 28

@@ -10,6 +10,10 @@ commands:
     usage: /lava give <weapon|all> [player]
     aliases: [lw]
     permission: lavaweapons.admin
+  rank:
+    description: In-game ranks (prefix + permissions)
+    usage: /rank
+    permission: lavaweapons.admin
 permissions:
   lavaweapons.admin:
     description: Give and manage Lava Weapons
